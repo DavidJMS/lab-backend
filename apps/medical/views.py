@@ -8,9 +8,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Serializers
 from apps.medical.serializers import MedicalHistoryModelSerializer
+from apps.accounts.serializers import ClientModelSerializer
 
 # My Models
 from apps.medical.models import MedicalHistoryClient
+from apps.accounts.models import Client
 
 
 class HandleMedicalHistoryClientView(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -18,3 +20,26 @@ class HandleMedicalHistoryClientView(mixins.CreateModelMixin, viewsets.GenericVi
     queryset = MedicalHistoryClient.objects.all()
     serializer_class = MedicalHistoryModelSerializer
     permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            dni: str = data["dni"]
+        except AttributeError as e:
+            return Response({message: "El dni es requerido"})
+        clients = Client.objects.filter(dni=dni)
+        client = False
+        if not clients.exists():
+            serializer = ClientModelSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            client = serializer.save()
+        else:
+            client = clients[0]
+        data[client] = client.id
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
