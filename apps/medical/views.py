@@ -7,12 +7,24 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Serializers
-from apps.medical.serializers import MedicalHistoryModelSerializer
+from apps.medical.serializers import (
+    MedicalHistoryModelSerializer,
+    MedicalExamModelSerializer,
+)
 from apps.accounts.serializers import ClientModelSerializer
 
 # My Models
-from apps.medical.models import MedicalHistoryClient
+from apps.medical.models import MedicalHistoryClient, MedicalExam
 from apps.accounts.models import Client
+
+
+class HandleMedicalExamView(
+    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+):
+
+    queryset = MedicalExam.objects.all()
+    serializer_class = MedicalExamModelSerializer
+    permission_classes = [AllowAny]
 
 
 class HandleMedicalHistoryClientView(mixins.CreateModelMixin, viewsets.GenericViewSet):
