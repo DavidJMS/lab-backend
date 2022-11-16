@@ -27,7 +27,9 @@ class HandleMedicalExamView(
     permission_classes = [AllowAny]
 
 
-class HandleMedicalHistoryClientView(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class HandleMedicalHistoryClientView(
+    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+):
 
     queryset = MedicalHistoryClient.objects.all()
     serializer_class = MedicalHistoryModelSerializer
