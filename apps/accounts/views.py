@@ -13,10 +13,7 @@ from apps.accounts import serializers
 from apps.accounts.models import Client
 
 
-class HandleClientView(
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
+class HandleClientView(viewsets.ModelViewSet):
 
     queryset = Client.objects.all()
     serializer_class = serializers.ClientModelSerializer
