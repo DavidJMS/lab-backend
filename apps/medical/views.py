@@ -18,9 +18,7 @@ from apps.medical.models import MedicalHistoryClient, MedicalExam
 from apps.accounts.models import Client
 
 
-class HandleMedicalExamView(
-    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
-):
+class HandleMedicalExamView(viewsets.ModelViewSet):
 
     queryset = MedicalExam.objects.all()
     serializer_class = MedicalExamModelSerializer
