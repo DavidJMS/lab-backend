@@ -3,6 +3,9 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+# Filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 # Permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
@@ -25,13 +28,14 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 
-class HandleMedicalHistoryClientView(
-    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
-):
+class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 
     queryset = MedicalHistoryClient.objects.all()
     serializer_class = MedicalHistoryModelSerializer
     permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {"create_at": ["range"]}
 
     def create(self, request, *args, **kwargs):
         data = request.data

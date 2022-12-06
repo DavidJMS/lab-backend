@@ -15,3 +15,4 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
 
         model = MedicalHistoryClient
         fields = "__all__"
+        depth = 2
