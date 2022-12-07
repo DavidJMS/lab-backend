@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Serializers
 from apps.medical.serializers import (
+    CreateMedicalHistoryModelSerializer,
     MedicalHistoryModelSerializer,
     MedicalExamModelSerializer,
 )
@@ -31,11 +32,23 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
 class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 
     queryset = MedicalHistoryClient.objects.all()
-    serializer_class = MedicalHistoryModelSerializer
+    serializer_class = CreateMedicalHistoryModelSerializer
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {"create_at": ["range"]}
+
+    def get_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input, and for serializing output.
+        """
+        if self.action not in ["create", "update"]:
+            serializer_class = MedicalHistoryModelSerializer
+        else:
+            serializer_class = self.get_serializer_class()
+        kwargs.setdefault("context", self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -51,9 +64,11 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
             client = serializer.save()
         else:
             client = clients[0]
-        data[client] = client.id
+            print("sss", client)
+        data["client"] = client.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
+        serializer.save()
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(
