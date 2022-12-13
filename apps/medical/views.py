@@ -36,7 +36,7 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = {"create_at": ["range"]}
+    filterset_fields = {"create_at": ["range"], "client__dni": ["exact"]}
 
     def get_serializer(self, *args, **kwargs):
         """
