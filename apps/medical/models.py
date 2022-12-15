@@ -25,3 +25,6 @@ class MedicalHistoryClient(models.Model):
     method_payment = models.CharField(max_length=50, null=True)
     photo_billet = models.ImageField(upload_to="media", null=True)
     create_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-create_at"]
