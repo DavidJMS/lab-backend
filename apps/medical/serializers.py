@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MedicalHistoryClient, MedicalExam
+from .models import MedicalHistoryClient, MedicalExam, Payment
 from apps.accounts.serializers import ClientModelSerializer
 
 
@@ -29,11 +29,8 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
         depth = 2
 
 
-class MedicalHistoryModelSerializer(serializers.ModelSerializer):
-
-    client = ClientModelSerializer()
-
+class PaymentModelSerializer(serializers.ModelSerializer):
     class Meta:
 
-        model = MedicalHistoryClient
-        fields = ["total_pay", "total_paid"]
+        model = Payment
+        fields = "__all__"

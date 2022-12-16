@@ -14,11 +14,12 @@ from apps.medical.serializers import (
     CreateMedicalHistoryModelSerializer,
     MedicalHistoryModelSerializer,
     MedicalExamModelSerializer,
+    PaymentModelSerializer,
 )
 from apps.accounts.serializers import ClientModelSerializer
 
 # My Models
-from apps.medical.models import MedicalHistoryClient, MedicalExam
+from apps.medical.models import MedicalHistoryClient, MedicalExam, Payment
 from apps.accounts.models import Client
 
 
@@ -76,11 +77,11 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
         )
 
 
-class FinancialsView(viewsets.GenericViewSet):
+class FinancialsView(viewsets.ModelViewSet):
 
-    queryset = MedicalHistoryClient.objects.all()
+    queryset = Payment.objects.all()
+    serializer_class = PaymentModelSerializer
+    permission_classes = [AllowAny]
 
-    @action(detail=False, methods="get")
-    def get_collections(self, request, *args, **kwargs):
-
-        return Response(data, status=status.HTTP_200_OK)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {"payment_date": ["range"]}
