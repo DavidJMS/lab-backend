@@ -27,3 +27,13 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
         model = MedicalHistoryClient
         fields = "__all__"
         depth = 2
+
+
+class MedicalHistoryModelSerializer(serializers.ModelSerializer):
+
+    client = ClientModelSerializer()
+
+    class Meta:
+
+        model = MedicalHistoryClient
+        fields = ["total_pay", "total_paid"]

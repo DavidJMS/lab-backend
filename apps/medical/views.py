@@ -74,3 +74,13 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
+
+
+class FinancialsView(viewsets.GenericViewSet):
+
+    queryset = MedicalHistoryClient.objects.all()
+
+    @action(detail=False, methods="get")
+    def get_collections(self, request, *args, **kwargs):
+
+        return Response(data, status=status.HTTP_200_OK)
