@@ -32,7 +32,6 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
 
 class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 
-    queryset = MedicalHistoryClient.objects.all()
     serializer_class = CreateMedicalHistoryModelSerializer
     permission_classes = [AllowAny]
 
@@ -44,12 +43,19 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
-        if self.action not in ["create", "update"]:
+        if self.action == "get_payments":
+            serializer_class = PaymentModelSerializer
+        elif self.action not in ["create", "update"]:
             serializer_class = MedicalHistoryModelSerializer
-        else:
+        elif self.action in ["create", "update"]:
             serializer_class = self.get_serializer_class()
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(*args, **kwargs)
+
+    def get_queryset(self):
+        if self.action == "get_payments":
+            return Payment.objects.filter(medical_history__pk=self.medical_history_pk)
+        return MedicalHistoryClient.objects.all()
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -75,6 +81,13 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
         return Response(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
+
+    @action(detail=True, methods=["get"])
+    def get_payments(self, request, *args, **kwargs):
+        self.medical_history_pk = kwargs.get("pk")
+        queryset = self.get_queryset()
+        data = self.get_serializer(queryset, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class FinancialsView(viewsets.ModelViewSet):
