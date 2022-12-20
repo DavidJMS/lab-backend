@@ -14,6 +14,7 @@ from apps.medical.serializers import (
     CreateMedicalHistoryModelSerializer,
     MedicalHistoryModelSerializer,
     MedicalExamModelSerializer,
+    CreatePaymentModelSerializer,
     PaymentModelSerializer,
 )
 from apps.accounts.serializers import ClientModelSerializer
@@ -93,8 +94,20 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 class FinancialsView(viewsets.ModelViewSet):
 
     queryset = Payment.objects.all()
-    serializer_class = PaymentModelSerializer
+    serializer_class = CreatePaymentModelSerializer
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {"payment_date": ["range"]}
+
+    def get_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input, and for serializing output.
+        """
+        if self.action in ["create", "update"]:
+            serializer_class = self.get_serializer_class()
+        else:
+            serializer_class = PaymentModelSerializer
+        kwargs.setdefault("context", self.get_serializer_context())
+        return serializer_class(*args, **kwargs)

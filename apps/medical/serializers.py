@@ -29,8 +29,19 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
         depth = 2
 
 
-class PaymentModelSerializer(serializers.ModelSerializer):
+class CreatePaymentModelSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Payment
         fields = "__all__"
+
+
+class PaymentModelSerializer(serializers.ModelSerializer):
+
+    medical_history = MedicalHistoryModelSerializer(read_only=True)
+
+    class Meta:
+
+        model = Payment
+        fields = "__all__"
+        depth = 2
