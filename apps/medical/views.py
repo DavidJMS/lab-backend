@@ -30,6 +30,9 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
     serializer_class = MedicalExamModelSerializer
     permission_classes = [AllowAny]
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {"name": ["exact"]}
+
 
 class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 

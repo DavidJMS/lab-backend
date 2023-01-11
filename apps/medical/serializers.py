@@ -8,8 +8,6 @@ from django.conf import settings
 
 
 class MedicalExamModelSerializer(serializers.ModelSerializer):
-    create_at = serializers.DateField(format=settings.DATETIME_FORMAT)
-
     class Meta:
 
         model = MedicalExam
