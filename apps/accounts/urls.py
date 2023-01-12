@@ -5,9 +5,10 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 # Views
-from .views import HandleClientView
+from .views import HandleClientView, HandleAuthView
 
 router = DefaultRouter()
-router.register(r"", HandleClientView, basename="clients")
+router.register(r"client", HandleClientView, basename="clients")
+router.register(r"auth", HandleAuthView, basename="auth")
 
 urlpatterns = [path("", include(router.urls))]

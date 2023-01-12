@@ -24,3 +24,28 @@ class HandleClientView(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = serializers.ClientModelSerializer
     permissions = [AllowAny]
+
+
+class HandleAuthView(viewsets.GenericViewSet):
+    @action(detail=False, methods=["post"])
+    def login(self, request):
+        serializer = serializers.UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user, token = serializer.save()
+        return Response(
+            {
+                "message": "Login realizado con exito",
+                "user": user.username,
+                "token": token,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=False, methods=["post"])
+    def logout(self, request):
+        user = request.user
+        user.last_login = datetime_modules.datetime.now()
+        user.save()
+        user.auth_token.delete()
+        data = {"message": "Te haz desconectado del sistema"}
+        return Response(data, status=status.HTTP_200_OK)
