@@ -31,7 +31,7 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = {"name": ["exact"]}
+    filterset_fields = {"name": ["icontains"]}
 
 
 class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
@@ -75,7 +75,6 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
             client = serializer.save()
         else:
             client = clients[0]
-            print("sss", client)
         data["client"] = client.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -101,7 +100,7 @@ class FinancialsView(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = {"payment_date": ["range"]}
+    filterset_fields = {"payment_date": ["date", "range"]}
 
     def get_serializer(self, *args, **kwargs):
         """

@@ -122,7 +122,7 @@ USE_L10N = True
 USE_TZ = True
 
 
-DATETIME_FORMAT = "%d-%m-%Y"
+DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 DATETIME_FORMAT_INPUT = "%m-%d-%Y %H:%M:%S"
 
 # Static files (CSS, JavaScript, Images)
