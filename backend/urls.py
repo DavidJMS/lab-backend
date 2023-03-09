@@ -6,4 +6,8 @@ urlpatterns = [
     path(
         "api/medical/", include(("apps.medical.urls", "medical"), namespace="medical")
     ),
+    path(
+        "api/financials/",
+        include(("apps.financials.urls", "financials"), namespace="financials"),
+    ),
 ]

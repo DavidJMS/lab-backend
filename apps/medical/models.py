@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.financials.models import PriceDollar
+
 
 class MedicalExam(models.Model):
 
@@ -22,6 +24,13 @@ class MedicalHistoryClient(models.Model):
     total_pay = models.DecimalField(max_digits=10, decimal_places=2)
     total_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def total_pay_bs():
+        prioe_dollar = PriceDollar.objects.latest("price")
+        if prioe_dollar:
+            return total_pay * prioe_dollar.price
+        return "No se encontro una tasa que refleje el precio del dollar en bolivares"
 
     class Meta:
         ordering = ["-create_at"]
