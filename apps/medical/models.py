@@ -34,15 +34,3 @@ class MedicalHistoryClient(models.Model):
 
     class Meta:
         ordering = ["-create_at"]
-
-
-class Payment(models.Model):
-
-    method_payment = models.CharField(max_length=50)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    photo_billet = models.ImageField(upload_to="media", null=True)
-    number_ref = models.CharField(max_length=30, null=True)
-    payment_date = models.DateTimeField(auto_now_add=True)
-    medical_history = models.ForeignKey(
-        MedicalHistoryClient, on_delete=models.SET_NULL, null=True, blank=False
-    )

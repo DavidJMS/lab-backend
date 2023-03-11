@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MedicalHistoryClient, MedicalExam, Payment
+from .models import MedicalHistoryClient, MedicalExam
 from apps.accounts.serializers import ClientModelSerializer
 
 # Formats
@@ -29,24 +29,5 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = MedicalHistoryClient
-        fields = "__all__"
-        depth = 2
-
-
-class CreatePaymentModelSerializer(serializers.ModelSerializer):
-    class Meta:
-
-        model = Payment
-        fields = "__all__"
-
-
-class PaymentModelSerializer(serializers.ModelSerializer):
-
-    payment_date = serializers.DateTimeField(format=settings.DATETIME_FORMAT)
-    medical_history = MedicalHistoryModelSerializer(read_only=True)
-
-    class Meta:
-
-        model = Payment
         fields = "__all__"
         depth = 2
