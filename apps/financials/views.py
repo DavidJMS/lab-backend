@@ -21,9 +21,7 @@ from apps.financials.models import PriceDollar, Payment
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-class HandlePriceDollarView(
-    viewsets.mixins.CreateModelMixin, viewsets.mixins.ListModelMixin, viewsets.ViewSet
-):
+class HandlePriceDollarView(viewsets.ModelViewSet):
 
     queryset = PriceDollar.objects.all()
     serializer_class = PriceDollarModelSerializer
