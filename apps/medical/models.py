@@ -1,6 +1,11 @@
+# Django
 from django.db import models
 
+# My Models
 from apps.financials.models import PriceDollar
+
+# My Managers
+from apps.medical.managers import MedicalHistoryManager
 
 
 class MedicalExam(models.Model):
@@ -25,6 +30,8 @@ class MedicalHistoryClient(models.Model):
         if prioe_dollar:
             return total_pay * prioe_dollar.price
         return "No se encontro una tasa que refleje el precio del dolar en bolivares"
+
+    objects = MedicalHistoryManager()
 
     class Meta:
         ordering = ["-create_at"]

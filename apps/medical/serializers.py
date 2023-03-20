@@ -18,7 +18,7 @@ class CreateMedicalHistoryModelSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = MedicalHistoryClient
-        fields = "__all__"
+        exclude = ["code"]
 
 
 class MedicalHistoryModelSerializer(serializers.ModelSerializer):

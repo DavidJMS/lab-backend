@@ -15,7 +15,7 @@ class MedicalHistoryManager(models.Manager):
 
     def create(self, **kwargs):
         """Handle code creation."""
-        pool = ascii_uppercase + digits + ".-"
+        pool = digits
         code = kwargs.get("code", "".join(random.choices(pool, k=self.CODE_LENGTH)))
         kwargs["code"] = code
         return super(MedicalHistoryManager, self).create(**kwargs)
