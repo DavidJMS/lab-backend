@@ -5,7 +5,11 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 # Views
-from .views import HandleMedicalHistoryClientView, HandleMedicalExamView, FinancialsView
+from .views import (
+    HandleMedicalHistoryClientView,
+    HandleMedicalExamView,
+    HandleResultsView,
+)
 
 router = DefaultRouter()
 router.register(
@@ -19,8 +23,8 @@ router.register(
     basename="exams",
 )
 router.register(
-    r"financials",
-    FinancialsView,
-    basename="financials",
+    r"results",
+    HandleResultsView,
+    basename="exams",
 )
 urlpatterns = [path("", include(router.urls))]

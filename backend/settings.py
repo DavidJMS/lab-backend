@@ -29,22 +29,30 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+
+THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
+]
+
+LOCAL_APPS = [
     "apps.accounts",
     "apps.medical",
     "apps.financials",
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -131,6 +139,11 @@ DATETIME_FORMAT_INPUT = "%m-%d-%Y %H:%M:%S"
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
+
+
+# Media settings
+MEDIA_ROOT = "media"
+MEDIA_URL = "/media/"
 
 # Django REST Framework
 REST_FRAMEWORK = {

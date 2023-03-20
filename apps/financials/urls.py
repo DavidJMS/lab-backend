@@ -5,9 +5,10 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 # Views
-from .views import HandlePriceDollarView
+from .views import HandlePriceDollarView, PaymentsView
 
 router = DefaultRouter()
 router.register(r"price-dollar", HandlePriceDollarView, basename="clients")
+router.register(r"payments", PaymentsView, basename="clients")
 
 urlpatterns = [path("", include(router.urls))]

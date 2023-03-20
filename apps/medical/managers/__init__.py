@@ -1,0 +1,1 @@
+from .medical import MedicalHistoryManager

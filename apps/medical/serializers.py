@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import MedicalHistoryClient, MedicalExam, Payment
+from .models import MedicalHistoryClient, MedicalExam, ResultExamClient
 from apps.accounts.serializers import ClientModelSerializer
 
 # Formats
@@ -18,7 +18,7 @@ class CreateMedicalHistoryModelSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = MedicalHistoryClient
-        fields = "__all__"
+        exclude = ["code"]
 
 
 class MedicalHistoryModelSerializer(serializers.ModelSerializer):
@@ -33,20 +33,30 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
         depth = 2
 
 
-class CreatePaymentModelSerializer(serializers.ModelSerializer):
+class ResultExamClientModelSerializer(serializers.ModelSerializer):
     class Meta:
 
-        model = Payment
+        model = ResultExamClient
         fields = "__all__"
 
 
-class PaymentModelSerializer(serializers.ModelSerializer):
+class ResultExamClientByCode(serializers.Serializer):
 
-    payment_date = serializers.DateTimeField(format=settings.DATETIME_FORMAT)
-    medical_history = MedicalHistoryModelSerializer(read_only=True)
+    id = serializers.IntegerField()
+    code = serializers.CharField(max_length=6)
 
-    class Meta:
+    def validate(self, data):
+        try:
+            self.result = MedicalHistoryClient.objects.get(id=data["id"])
+            if self.result.code != data["code"]:
+                raise serializers.ValidationError("Código inválido")
+            self.id = data["id"]
+        except ResultExamClient.DoesNotExist:
+            raise serializers.ValidationError("Link inválido")
+        return data
 
-        model = Payment
-        fields = "__all__"
-        depth = 2
+    def get(self):
+        query = ResultExamClient.objects.filter(medical_history__id=self.id)
+        results = ResultExamClientModelSerializer(query, many=True).data
+        medical_history = MedicalHistoryModelSerializer(self.result).data
+        return results, medical_history
