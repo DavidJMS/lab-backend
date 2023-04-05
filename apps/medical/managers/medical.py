@@ -1,5 +1,6 @@
 # From Django
 from django.db import models
+from django.utils import timezone
 
 # Utilities
 import random
@@ -18,4 +19,5 @@ class MedicalHistoryManager(models.Manager):
         pool = digits
         code = kwargs.get("code", "".join(random.choices(pool, k=self.CODE_LENGTH)))
         kwargs["code"] = code
+        kwargs["number_id"] = self.filter(create_at__date=timezone.now()).count() + 1
         return super(MedicalHistoryManager, self).create(**kwargs)

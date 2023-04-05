@@ -4,7 +4,7 @@ from .extra import MainModel
 
 
 # My Imports
-from apps.financials.constants import Divisa, MethodPayment
+from apps.financials.constants import Divisa, MethodPayment, TypePayment
 
 
 class PriceDollar(MainModel):
@@ -31,3 +31,4 @@ class Payment(MainModel):
     # Ref Data
     number_ref = models.CharField(max_length=30, null=True, blank=True)
     photo_billet = models.ImageField(upload_to="media", null=True, blank=True)
+    type = models.CharField(max_length=50, choices=TypePayment.choices)

@@ -23,6 +23,7 @@ class MedicalHistoryClient(models.Model):
     total_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=6)
+    number_id = models.IntegerField(null=True)
 
     @property
     def total_pay_bs():
