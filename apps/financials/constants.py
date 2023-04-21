@@ -13,5 +13,5 @@ class MethodPayment(models.TextChoices):
 
 
 class TypePayment(models.TextChoices):
-    PaymentClient = "PaymentClient", _("Payment Client to pay exams")
-    PaymentTurned = "PaymentTurned", _("Payment Turned by employee")
+    PaymentClient = "Pago del cliente", _("Pago realizado por el cliente")
+    PaymentTurned = "Vuelto", _("Vuelto")

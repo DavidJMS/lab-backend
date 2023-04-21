@@ -12,17 +12,17 @@ from apps.financials.serializers import (
     CreatePriceDollar,
     CreatePaymentModelSerializer,
     PaymentModelSerializer,
+    CashFlowModelSerializer,
 )
 
 # Models
-from apps.financials.models import PriceDollar, Payment
+from apps.financials.models import PriceDollar, Payment, CashFlow
 
 # Filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
 class HandlePriceDollarView(viewsets.ModelViewSet):
-
     queryset = PriceDollar.objects.all()
     serializer_class = PriceDollarModelSerializer
     permissions = [AllowAny]
@@ -47,7 +47,6 @@ class HandlePriceDollarView(viewsets.ModelViewSet):
 
 
 class PaymentsView(viewsets.ModelViewSet):
-
     queryset = Payment.objects.all()
     serializer_class = CreatePaymentModelSerializer
     permission_classes = [AllowAny]
@@ -66,3 +65,20 @@ class PaymentsView(viewsets.ModelViewSet):
             serializer_class = PaymentModelSerializer
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(*args, **kwargs)
+
+
+class CashFlowViewSet(viewsets.GenericViewSet):
+    @action(detail=False, methods=["get"])
+    def get_cash_flow(self, request):
+        cash_flow = CashFlow.objects.filter(is_active=True)
+        if cash_flow:
+            data = CashFlowModelSerializer(cash_flow[0]).data
+            return Response(data, status=status.HTTP_200_OK)
+        return Response([], status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["put"])
+    def cash_flow(self, request):
+        serializer = CashFlowModelSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
