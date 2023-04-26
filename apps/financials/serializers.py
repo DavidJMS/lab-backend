@@ -44,7 +44,14 @@ class CreatePaymentModelSerializer(serializers.ModelSerializer):
                 cash_flow = query_cash_flow[0]
 
             else:
-                cash_flow = CashFlow.objects.create(is_active=True)
+                print("ssss")
+                cash_flow = CashFlow.objects.create(
+                    is_active=True,
+                    amount_bolivares_cash=0.00,
+                    amount_bolivares_bank=0.00,
+                    amount_dollars_cash=0.00,
+                    amount_dollars_bank=0.00,
+                )
 
             if (
                 result.divisa == Divisa.Dolares

@@ -60,10 +60,18 @@ class Payment(MainModel):
 
 class CashFlow(MainModel):
     is_active = models.BooleanField(default=True)
-    amount_bolivares_cash = models.DecimalField(max_digits=10, decimal_places=2)
-    amount_bolivares_bank = models.DecimalField(max_digits=10, decimal_places=2)
-    amount_dollars_cash = models.DecimalField(max_digits=10, decimal_places=2)
-    amount_dollars_bank = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_bolivares_cash = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00
+    )
+    amount_bolivares_bank = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00
+    )
+    amount_dollars_cash = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00
+    )
+    amount_dollars_bank = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00
+    )
     transactions = models.ManyToManyField(to=Payment)
 
     class Meta:

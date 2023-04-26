@@ -72,6 +72,26 @@ class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     serializer_class = CashFlowModelSerializer
     permission_classes = [AllowAny]
 
+    @action(detail=False, methods=["post"])
+    def desactivate(self, request):
+        query_cash_flow = CashFlow.objects.filter(id=request.data["id"])
+        if query_cash_flow.exists():
+            cash_flow = query_cash_flow[0]
+            cash_flow.is_active = False
+            cash_flow.save(update_fields=["is_active"])
+            new_cash_flow = CashFlow.objects.create(
+                is_active=True,
+                amount_bolivares_cash=0.00,
+                amount_bolivares_bank=0.00,
+                amount_dollars_cash=0.00,
+                amount_dollars_bank=0.00,
+            )
+            data = CashFlowModelSerializer(new_cash_flow).data
+            return Response(data, status=status.HTTP_200_OK)
+        return Response(
+            "Error, no se encontro un flujo de caja", status=status.HTTP_404_NOT_FOUND
+        )
+
     @action(detail=False, methods=["get"])
     def get_cash_flow(self, request):
         cash_flow = CashFlow.objects.filter(is_active=True)
