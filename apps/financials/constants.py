@@ -10,3 +10,8 @@ class Divisa(models.TextChoices):
 class MethodPayment(models.TextChoices):
     Transferencia_Interbancaria = "Pago Interbancario", _("Pago Interbancario")
     Efectivo = "Efectivo", _("Efectivo")
+
+
+class TypePayment(models.TextChoices):
+    PaymentClient = "Pago del cliente", _("Pago realizado por el cliente")
+    PaymentTurned = "Vuelto", _("Vuelto")
