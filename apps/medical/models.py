@@ -9,21 +9,20 @@ from apps.medical.managers import MedicalHistoryManager
 
 
 class MedicalExam(models.Model):
-
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=250)
     price = models.DecimalField(max_digits=12, decimal_places=2)
 
 
 class MedicalHistoryClient(models.Model):
-
     client = models.ForeignKey("accounts.Client", on_delete=models.SET_NULL, null=True)
     medical_exams = models.ManyToManyField(MedicalExam)
     total_pay = models.DecimalField(max_digits=10, decimal_places=2)
-    total_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    total_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     create_at = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=6)
     number_id = models.IntegerField(null=True)
+    with_samples = models.BooleanField(default=False)
 
     @property
     def total_pay_bs():
@@ -39,7 +38,6 @@ class MedicalHistoryClient(models.Model):
 
 
 class ResultExamClient(models.Model):
-
     medical_history = models.ForeignKey(
         MedicalHistoryClient, on_delete=models.SET_NULL, null=True
     )

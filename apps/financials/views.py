@@ -67,7 +67,11 @@ class PaymentsView(viewsets.ModelViewSet):
         return serializer_class(*args, **kwargs)
 
 
-class CashFlowViewSet(viewsets.GenericViewSet):
+class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
+    queryset = CashFlow.objects.all()
+    serializer_class = CashFlowModelSerializer
+    permission_classes = [AllowAny]
+
     @action(detail=False, methods=["get"])
     def get_cash_flow(self, request):
         cash_flow = CashFlow.objects.filter(is_active=True)

@@ -31,6 +31,32 @@ class Payment(MainModel):
     photo_billet = models.ImageField(upload_to="media", null=True, blank=True)
     type = models.CharField(max_length=50, choices=TypePayment.choices)
 
+    def delete(self, *args, **kwargs):
+        self.medical_history.total_paid -= self.amount_dollars
+        self.medical_history.save(update_fields=["total_paid"])
+        query_cash_flow = self.cashflow_set.all()
+        if query_cash_flow.exists():
+            cash_flow = query_cash_flow[0]
+
+            if (
+                self.divisa == Divisa.Dolares
+                and self.method_payment == MethodPayment.Efectivo
+            ):
+                cash_flow.amount_dollars_cash -= self.amount_dollars
+            elif (
+                self.divisa == Divisa.Bolivares
+                and self.method_payment == MethodPayment.Efectivo
+            ):
+                cash_flow.amount_bolivares_cash -= self.amount_bolivares
+            elif (
+                self.divisa == Divisa.Bolivares
+                and self.method_payment == MethodPayment.Transferencia_Interbancaria
+            ):
+                cash_flow.amount_bolivares_bank -= self.amount_bolivares
+            cash_flow.transactions.remove(self)
+            cash_flow.save()
+        super().delete(*args, **kwargs)
+
 
 class CashFlow(MainModel):
     is_active = models.BooleanField(default=True)

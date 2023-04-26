@@ -27,7 +27,6 @@ from apps.financials.models import Payment
 
 
 class HandleMedicalExamView(viewsets.ModelViewSet):
-
     queryset = MedicalExam.objects.all()
     serializer_class = MedicalExamModelSerializer
     permission_classes = [AllowAny]
@@ -37,7 +36,6 @@ class HandleMedicalExamView(viewsets.ModelViewSet):
 
 
 class HandleResultsView(viewsets.ModelViewSet):
-
     queryset = ResultExamClient.objects.all()
     serializer_class = ResultExamClientModelSerializer
     permission_classes = [AllowAny]
@@ -64,12 +62,16 @@ class HandleResultsView(viewsets.ModelViewSet):
 
 
 class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
-
     serializer_class = CreateMedicalHistoryModelSerializer
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = {"create_at": ["date"], "client__dni": ["exact"]}
+    filterset_fields = {
+        "create_at": ["date"],
+        "client__dni": ["exact"],
+        "number_id": ["exact"],
+        "with_samples": ["exact"],
+    }
 
     def get_serializer(self, *args, **kwargs):
         """
