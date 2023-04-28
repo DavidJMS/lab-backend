@@ -17,9 +17,12 @@ from apps.accounts.models import Client
 
 
 class HandleClientView(viewsets.ModelViewSet):
-
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["dni"]
+    filterset_fields = {
+        "dni": ["iexact"],
+        "first_names": ["icontains"],
+        "last_names": ["icontains"],
+    }
 
     queryset = Client.objects.all()
     serializer_class = serializers.ClientModelSerializer
