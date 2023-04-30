@@ -81,10 +81,10 @@ class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             cash_flow.save(update_fields=["is_active"])
             new_cash_flow = CashFlow.objects.create(
                 is_active=True,
-                amount_bolivares_cash=0.00,
-                amount_bolivares_bank=0.00,
-                amount_dollars_cash=0.00,
-                amount_dollars_bank=0.00,
+                amount_bolivares_cash=cash_flow.amount_bolivares_cash,
+                amount_bolivares_bank=cash_flow.amount_bolivares_bank,
+                amount_dollars_cash=cash_flow.amount_dollars_cash,
+                amount_dollars_bank=cash_flow.amount_dollars_bank,
             )
             data = CashFlowModelSerializer(new_cash_flow).data
             return Response(data, status=status.HTTP_200_OK)

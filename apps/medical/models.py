@@ -8,6 +8,10 @@ from apps.financials.models import PriceDollar
 from apps.medical.managers import MedicalHistoryManager
 
 
+# My Constants
+from apps.medical.constants import TypeMedical
+
+
 class MedicalExam(models.Model):
     name = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=12, decimal_places=2)
@@ -21,7 +25,14 @@ class MedicalHistoryClient(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=6)
     number_id = models.IntegerField(null=True)
+    type = models.CharField(
+        max_length=30, choices=TypeMedical.choices, default=TypeMedical.Particular
+    )
+
+    deadline = models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
+
     with_samples = models.BooleanField(default=False)
+    result_sent = models.BooleanField(default=False)
 
     @property
     def total_pay_bs():

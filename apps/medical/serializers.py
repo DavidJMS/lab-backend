@@ -21,6 +21,7 @@ class CreateMedicalHistoryModelSerializer(serializers.ModelSerializer):
 
 class MedicalHistoryModelSerializer(serializers.ModelSerializer):
     create_at = serializers.DateTimeField(format=settings.DATETIME_FORMAT)
+    deadline = serializers.DateTimeField(format=settings.DATETIME_FORMAT_INPUT_ALT)
     client = ClientModelSerializer()
 
     class Meta:
