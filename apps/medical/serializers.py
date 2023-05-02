@@ -9,25 +9,22 @@ from django.conf import settings
 
 class MedicalExamModelSerializer(serializers.ModelSerializer):
     class Meta:
-
         model = MedicalExam
         fields = "__all__"
 
 
 class CreateMedicalHistoryModelSerializer(serializers.ModelSerializer):
     class Meta:
-
         model = MedicalHistoryClient
         exclude = ["code"]
 
 
 class MedicalHistoryModelSerializer(serializers.ModelSerializer):
-
     create_at = serializers.DateTimeField(format=settings.DATETIME_FORMAT)
+    deadline = serializers.DateTimeField(format=settings.DATETIME_FORMAT_INPUT_ALT)
     client = ClientModelSerializer()
 
     class Meta:
-
         model = MedicalHistoryClient
         fields = "__all__"
         depth = 2
@@ -35,13 +32,11 @@ class MedicalHistoryModelSerializer(serializers.ModelSerializer):
 
 class ResultExamClientModelSerializer(serializers.ModelSerializer):
     class Meta:
-
         model = ResultExamClient
         fields = "__all__"
 
 
 class ResultExamClientByCode(serializers.Serializer):
-
     id = serializers.IntegerField()
     code = serializers.CharField(max_length=6)
 

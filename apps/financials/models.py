@@ -4,16 +4,16 @@ from .extra import MainModel
 
 
 # My Imports
-from apps.financials.constants import Divisa, MethodPayment, TypePayment
+from apps.financials.constants import Divisa, MethodPayment, TypeTransaction
 
 
 class PriceDollar(MainModel):
     price = models.DecimalField(max_digits=12, decimal_places=2)
 
 
-class Payment(MainModel):
+class Transaction(MainModel):
     # Main Data
-    price = models.ForeignKey(
+    amount = models.ForeignKey(
         PriceDollar, on_delete=models.SET_NULL, null=True, blank=False
     )
     divisa = models.CharField(max_length=50, choices=Divisa.choices)
@@ -29,7 +29,7 @@ class Payment(MainModel):
     # Ref Data
     number_ref = models.CharField(max_length=30, null=True, blank=True)
     photo_billet = models.ImageField(upload_to="media", null=True, blank=True)
-    type = models.CharField(max_length=50, choices=TypePayment.choices)
+    type = models.CharField(max_length=50, choices=TypeTransaction.choices)
 
     def delete(self, *args, **kwargs):
         self.medical_history.total_paid -= self.amount_dollars
@@ -72,7 +72,7 @@ class CashFlow(MainModel):
     amount_dollars_bank = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.00
     )
-    transactions = models.ManyToManyField(to=Payment)
+    transactions = models.ManyToManyField(to=Transaction)
 
     class Meta:
         ordering = ["-id"]

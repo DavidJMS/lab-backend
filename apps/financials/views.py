@@ -10,13 +10,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from apps.financials.serializers import (
     PriceDollarModelSerializer,
     CreatePriceDollar,
-    CreatePaymentModelSerializer,
-    PaymentModelSerializer,
+    CreateTransactionModelSerializer,
+    TransactionModelSerializer,
     CashFlowModelSerializer,
 )
 
 # Models
-from apps.financials.models import PriceDollar, Payment, CashFlow
+from apps.financials.models import PriceDollar, Transaction, CashFlow
 
 # Filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -46,13 +46,17 @@ class HandlePriceDollarView(viewsets.ModelViewSet):
         )
 
 
-class PaymentsView(viewsets.ModelViewSet):
-    queryset = Payment.objects.all()
-    serializer_class = CreatePaymentModelSerializer
+class TransactionsView(viewsets.ModelViewSet):
+    serializer_class = CreateTransactionModelSerializer
     permission_classes = [AllowAny]
 
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {"create_at": ["date", "range"]}
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Transaction.objects.filter(medical_history__isnull=False)
+        return Transaction.objects.all()
 
     def get_serializer(self, *args, **kwargs):
         """
@@ -62,7 +66,7 @@ class PaymentsView(viewsets.ModelViewSet):
         if self.action in ["create", "update"]:
             serializer_class = self.get_serializer_class()
         else:
-            serializer_class = PaymentModelSerializer
+            serializer_class = TransactionModelSerializer
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
@@ -81,10 +85,10 @@ class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
             cash_flow.save(update_fields=["is_active"])
             new_cash_flow = CashFlow.objects.create(
                 is_active=True,
-                amount_bolivares_cash=0.00,
-                amount_bolivares_bank=0.00,
-                amount_dollars_cash=0.00,
-                amount_dollars_bank=0.00,
+                amount_bolivares_cash=cash_flow.amount_bolivares_cash,
+                amount_bolivares_bank=cash_flow.amount_bolivares_bank,
+                amount_dollars_cash=cash_flow.amount_dollars_cash,
+                amount_dollars_bank=cash_flow.amount_dollars_bank,
             )
             data = CashFlowModelSerializer(new_cash_flow).data
             return Response(data, status=status.HTTP_200_OK)
