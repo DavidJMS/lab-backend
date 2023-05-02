@@ -12,6 +12,8 @@ class MethodPayment(models.TextChoices):
     Efectivo = "Efectivo", _("Efectivo")
 
 
-class TypePayment(models.TextChoices):
+class TypeTransaction(models.TextChoices):
     PaymentClient = "Pago del cliente", _("Pago realizado por el cliente")
     PaymentTurned = "Vuelto", _("Vuelto")
+    Withdrawal= "Retiro manual", _("Retiro manual")
+    Ingress = "Ingreso manual", _("Ingreso manual")

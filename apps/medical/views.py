@@ -18,12 +18,12 @@ from apps.medical.serializers import (
     ResultExamClientByCode,
 )
 from apps.accounts.serializers import ClientModelSerializer
-from apps.financials.serializers import PaymentModelSerializer
+from apps.financials.serializers import TransactionModelSerializer
 
 # My Models
 from apps.medical.models import MedicalHistoryClient, MedicalExam, ResultExamClient
 from apps.accounts.models import Client
-from apps.financials.models import Payment
+from apps.financials.models import Transaction
 
 
 class HandleMedicalExamView(viewsets.ModelViewSet):
@@ -79,7 +79,7 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
         deserializing input, and for serializing output.
         """
         if self.action == "get_payments":
-            serializer_class = PaymentModelSerializer
+            serializer_class = TransactionModelSerializer
         elif self.action == "get_results":
             serializer_class = ResultExamClientModelSerializer
         elif self.action not in ["create", "update"]:
@@ -91,7 +91,7 @@ class HandleMedicalHistoryClientView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.action == "get_payments":
-            return Payment.objects.filter(medical_history__pk=self.medical_history_pk)
+            return Transaction.objects.filter(medical_history__pk=self.medical_history_pk)
         elif self.action == "get_results":
             return ResultExamClient.objects.filter(
                 medical_history__pk=self.medical_history_pk
