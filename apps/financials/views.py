@@ -2,6 +2,7 @@
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
 # Permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -13,10 +14,11 @@ from apps.financials.serializers import (
     CreateTransactionModelSerializer,
     TransactionModelSerializer,
     CashFlowModelSerializer,
+    PriceTransactionModelSerializer,
 )
 
 # Models
-from apps.financials.models import PriceDollar, Transaction, CashFlow
+from apps.financials.models import PriceDollar, Transaction, CashFlow, PriceTransaction
 
 # Filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -54,7 +56,7 @@ class TransactionsView(viewsets.ModelViewSet):
     filterset_fields = {"create_at": ["date", "range"]}
 
     def get_queryset(self):
-        if self.action == 'list':
+        if self.action == "list":
             return Transaction.objects.filter(medical_history__isnull=False)
         return Transaction.objects.all()
 
@@ -69,6 +71,21 @@ class TransactionsView(viewsets.ModelViewSet):
             serializer_class = TransactionModelSerializer
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(*args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        total_pay = instance.delete()
+        return Response({"total_pay": total_pay}, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance, total_pay = serializer.save()
+        data = self.get_serializer(instance).data
+        return Response(
+            {"data": data, "total_paid": total_pay},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
@@ -110,3 +127,36 @@ class CashFlowViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+class PriceTransactionsView(viewsets.ModelViewSet):
+    queryset = PriceTransaction.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = PriceTransactionModelSerializer
+
+    def get_queryset(self):
+        if not self.action == "medical":
+            return self.queryset
+        return self.queryset.filter(medical_history__pk=self.pk)
+
+    @action(detail=True, methods=["get"])
+    def medical(self, request, pk=None):
+        self.pk = pk
+        queryset = self.get_queryset()
+        data = PriceTransactionModelSerializer(queryset, many=True).data
+        return Response(data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        total_pay = instance.delete()
+        return Response({"total_pay": total_pay}, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance, total_pay = serializer.save()
+        data = self.get_serializer(instance).data
+        return Response(
+            {"data": data, "total_pay": total_pay},
+            status=status.HTTP_201_CREATED,
+        )

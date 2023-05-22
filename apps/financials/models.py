@@ -1,10 +1,17 @@
 # From Django
 from django.db import models
+from django.db.transaction import atomic
+
+# Utils
 from .extra import MainModel
 
-
 # My Imports
-from apps.financials.constants import Divisa, MethodPayment, TypeTransaction
+from apps.financials.constants import (
+    Divisa,
+    MethodPayment,
+    TypeTransaction,
+    ConcepPriceTransaction,
+)
 
 
 class PriceDollar(MainModel):
@@ -34,6 +41,7 @@ class Transaction(MainModel):
     def delete(self, *args, **kwargs):
         self.medical_history.total_paid -= self.amount_dollars
         self.medical_history.save(update_fields=["total_paid"])
+        total_paid = self.medical_history.total_paid
         query_cash_flow = self.cashflow_set.all()
         if query_cash_flow.exists():
             cash_flow = query_cash_flow[0]
@@ -56,6 +64,53 @@ class Transaction(MainModel):
             cash_flow.transactions.remove(self)
             cash_flow.save()
         super().delete(*args, **kwargs)
+        return total_paid
+
+
+class PriceTransaction(MainModel):
+    """
+    Esta clase contiene guarda los descuentos y aumentos de precios
+    hacia un MedicalHistory
+    """
+
+    price_dollar = models.ForeignKey(
+        PriceDollar, on_delete=models.SET_NULL, null=True, blank=False
+    )
+    amount_bolivares = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_dollars = models.DecimalField(max_digits=10, decimal_places=2)
+    concept = models.CharField(max_length=10, choices=ConcepPriceTransaction.choices)
+    medical_history = models.ForeignKey(
+        "medical.MedicalHistoryClient",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+    )
+
+    class Meta:
+        ordering = ["-id"]
+
+    def reverse_apply_operation(self):
+        match (self.concept):
+            case ConcepPriceTransaction.Discount:
+                self.medical_history.total_pay += self.amount_dollars
+            case ConcepPriceTransaction.Incress:
+                self.medical_history.total_pay -= self.amount_dollars
+        self.medical_history.save(update_fields=["total_pay"])
+        return self.medical_history.total_pay
+
+    def apply_operation(self):
+        match (self.concept):
+            case ConcepPriceTransaction.Discount:
+                self.medical_history.total_pay -= self.amount_dollars
+            case ConcepPriceTransaction.Incress:
+                self.medical_history.total_pay += self.amount_dollars
+        self.medical_history.save(update_fields=["total_pay"])
+
+    def delete(self):
+        with atomic():
+            total = self.reverse_apply_operation()
+            super().delete()
+            return total
 
 
 class CashFlow(MainModel):
