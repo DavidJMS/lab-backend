@@ -60,29 +60,67 @@ class CreateTransactionModelSerializer(serializers.ModelSerializer):
                 else:
                     cash_flow = CashFlow.objects.create(
                         is_active=True,
-                        amount_bolivares_cash=0.00,
-                        amount_bolivares_bank=0.00,
-                        amount_dollars_cash=0.00,
-                        amount_dollars_bank=0.00,
                     )
-
-                if (
-                    result.divisa == Divisa.Dolares
-                    and result.method_payment == MethodPayment.Efectivo
-                ):
-                    cash_flow.amount_dollars_cash += result.amount_dollars
-                elif (
-                    result.divisa == Divisa.Bolivares
-                    and result.method_payment == MethodPayment.Efectivo
-                ):
-                    cash_flow.amount_bolivares_cash += result.amount_bolivares
-                elif (
-                    result.divisa == Divisa.Bolivares
-                    and result.method_payment
-                    == MethodPayment.Transferencia_Interbancaria
-                ):
-                    cash_flow.amount_bolivares_bank += result.amount_bolivares
-
+                if result.type in [
+                    TypeTransaction.PaymentClient,
+                    TypeTransaction.Ingress,
+                ]:
+                    if result.divisa == Divisa.Dolares:
+                        match result.method_payment:
+                            case MethodPayment.Efectivo:
+                                cash_flow.amount_dollars_cash += result.amount_dollars
+                            case MethodPayment.Transferencia_Interbancaria:
+                                cash_flow.amount_dollars_bank += result.amount_dollars
+                            case _:
+                                raise ValueError(
+                                    "El valor de la metodo de pago no esta permitido"
+                                )
+                    elif result.divisa == Divisa.Bolivares:
+                        match result.method_payment:
+                            case MethodPayment.Efectivo:
+                                cash_flow.amount_bolivares_cash += (
+                                    result.amount_bolivares
+                                )
+                            case MethodPayment.Transferencia_Interbancaria:
+                                cash_flow.amount_bolivares_bank += (
+                                    result.amount_bolivares
+                                )
+                            case _:
+                                raise ValueError(
+                                    "El valor de la metodo de pago no esta permitido"
+                                )
+                    else:
+                        raise ValueError("El valor de la divisa no esta permitido")
+                elif result.type in [
+                    TypeTransaction.PaymentTurned,
+                    TypeTransaction.Withdrawal,
+                ]:
+                    if result.divisa == Divisa.Dolares:
+                        match result.method_payment:
+                            case MethodPayment.Efectivo:
+                                cash_flow.amount_dollars_cash -= result.amount_dollars
+                            case MethodPayment.Transferencia_Interbancaria:
+                                cash_flow.amount_dollars_bank -= result.amount_dollars
+                            case _:
+                                raise ValueError(
+                                    "El valor de la metodo de pago no esta permitido"
+                                )
+                    elif result.divisa == Divisa.Bolivares:
+                        match result.method_payment:
+                            case MethodPayment.Efectivo:
+                                cash_flow.amount_bolivares_cash -= (
+                                    result.amount_bolivares
+                                )
+                            case MethodPayment.Transferencia_Interbancaria:
+                                cash_flow.amount_bolivares_bank -= (
+                                    result.amount_bolivares
+                                )
+                            case _:
+                                raise ValueError(
+                                    "El valor de la metodo de pago no esta permitido"
+                                )
+                    else:
+                        raise ValueError("El valor de la divisa no esta permitido")
                 cash_flow.transactions.add(result)
                 cash_flow.save()
                 return result, total_paid
