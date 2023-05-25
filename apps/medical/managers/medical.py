@@ -19,5 +19,9 @@ class MedicalHistoryManager(models.Manager):
         pool = digits
         code = kwargs.get("code", "".join(random.choices(pool, k=self.CODE_LENGTH)))
         kwargs["code"] = code
-        kwargs["number_id"] = self.filter(create_at__date=timezone.now()).count() + 1
+        last = self.filter(create_at__date=timezone.now())
+        if last:
+            kwargs["number_id"] = last[0].number_id + 1
+        else:
+            kwargs["number_id"] = last.count() + 1
         return super(MedicalHistoryManager, self).create(**kwargs)
